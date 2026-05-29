@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1a1a2e"/>
+      <stop offset="40%"  stop-color="#16213e"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#C41E1E"/>
+      <stop offset="100%" stop-color="#e85d04"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="url(#bg)"/>
+
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="266" x2="1200" y2="266" stroke="white" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="0" y1="533" x2="1200" y2="533" stroke="white" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="400" y1="0" x2="400" y2="800" stroke="white" stroke-opacity="0.04" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="800" stroke="white" stroke-opacity="0.04" stroke-width="1"/>
+
+  <!-- Red accent bar -->
+  <rect x="80" y="340" width="48" height="4" fill="url(#accent)" rx="2"/>
+
+  <!-- Title -->
+  <text x="80" y="420" font-family="sans-serif" font-weight="700" font-size="80" fill="white" letter-spacing="-2">Posters &amp;</text>
+  <text x="80" y="510" font-family="sans-serif" font-weight="700" font-size="80" fill="white" letter-spacing="-2">Illustration</text>
+
+  <!-- Label top -->
+  <text x="80" y="310" font-family="sans-serif" font-weight="400" font-size="13" fill="white" opacity="0.4" letter-spacing="4">ILLUSTRATION · POSTER DESIGN</text>
+
+  <!-- Dot accent -->
+  <circle cx="1100" cy="680" r="60" fill="#C41E1E" opacity="0.15"/>
+  <circle cx="1100" cy="680" r="30" fill="#C41E1E" opacity="0.2"/>
+
+  <!-- Small corner label -->
+  <text x="1120" y="80" font-family="sans-serif" font-size="11" fill="white" opacity="0.25" letter-spacing="2" text-anchor="end">2024</text>
+</svg>

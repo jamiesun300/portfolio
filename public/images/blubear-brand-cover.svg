@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <circle cx="30" cy="30" r="18" fill="none" stroke="white" stroke-width="1.5" opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <!-- Blue background -->
+  <rect width="1200" height="800" fill="#2B2BFF"/>
+
+  <!-- Pattern overlay -->
+  <rect width="1200" height="800" fill="url(#grid)"/>
+
+  <!-- Orange block bottom right -->
+  <rect x="700" y="480" width="500" height="320" fill="#F5A500"/>
+
+  <!-- Black accent block -->
+  <rect x="0" y="680" width="320" height="120" fill="#0D0D0D"/>
+
+  <!-- Main wordmark -->
+  <text x="72" y="340" font-family="sans-serif" font-weight="900" font-size="168" fill="white" letter-spacing="-4">BLU</text>
+  <text x="72" y="510" font-family="sans-serif" font-weight="900" font-size="168" fill="#0D0D0D" letter-spacing="-4">BEAR</text>
+
+  <!-- TM mark -->
+  <text x="760" y="270" font-family="sans-serif" font-weight="400" font-size="28" fill="white" opacity="0.6">™</text>
+
+  <!-- Tagline -->
+  <text x="72" y="730" font-family="sans-serif" font-weight="400" font-size="14" fill="white" opacity="0.5" letter-spacing="4">SKATEBOARDING MEETS STYLE</text>
+
+  <!-- Year -->
+  <text x="1128" y="730" font-family="sans-serif" font-weight="400" font-size="14" fill="#0D0D0D" opacity="0.6" text-anchor="end" letter-spacing="2">2025</text>
+
+  <!-- Decorative skateboard shape (simplified) -->
+  <ellipse cx="1050" cy="560" rx="22" ry="70" fill="#0D0D0D" opacity="0.25" transform="rotate(-30 1050 560)"/>
+  <circle cx="1030" cy="607" r="8" fill="#0D0D0D" opacity="0.2"/>
+  <circle cx="1070" cy="515" r="8" fill="#0D0D0D" opacity="0.2"/>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <!-- Background -->
+  <rect width="1200" height="600" fill="#F0EBE1"/>
+
+  <!-- Label -->
+  <text x="60" y="70" font-family="sans-serif" font-weight="600" font-size="11" fill="#7A7A7A" letter-spacing="4">COLOR SYSTEM</text>
+  <rect x="60" y="82" width="40" height="2" fill="#C41E1E"/>
+
+  <!-- Swatch 1: Primary Blue -->
+  <rect x="60" y="110" width="240" height="360" fill="#2B2BFF" rx="2"/>
+  <text x="60" y="508" font-family="sans-serif" font-weight="700" font-size="13" fill="#0D0D0D">Primary Blue</text>
+  <text x="60" y="528" font-family="sans-serif" font-size="11" fill="#7A7A7A">#2B2BFF</text>
+
+  <!-- Swatch 2: Orange -->
+  <rect x="330" y="110" width="240" height="360" fill="#F5A500" rx="2"/>
+  <text x="330" y="508" font-family="sans-serif" font-weight="700" font-size="13" fill="#0D0D0D">Street Orange</text>
+  <text x="330" y="528" font-family="sans-serif" font-size="11" fill="#7A7A7A">#F5A500</text>
+
+  <!-- Swatch 3: Black -->
+  <rect x="600" y="110" width="240" height="360" fill="#0D0D0D" rx="2"/>
+  <text x="600" y="508" font-family="sans-serif" font-weight="700" font-size="13" fill="#0D0D0D">Deep Black</text>
+  <text x="600" y="528" font-family="sans-serif" font-size="11" fill="#7A7A7A">#0D0D0D</text>
+
+  <!-- Swatch 4: White -->
+  <rect x="870" y="110" width="240" height="360" fill="#FFFFFF" rx="2" stroke="#E0D9CE" stroke-width="1"/>
+  <text x="870" y="508" font-family="sans-serif" font-weight="700" font-size="13" fill="#0D0D0D">Clean White</text>
+  <text x="870" y="528" font-family="sans-serif" font-size="11" fill="#7A7A7A">#FFFFFF</text>
+</svg>

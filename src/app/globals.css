@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #EFE9DF;
+  color: #0D0D0D;
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Text selection ─── */
+::selection {
+  background-color: #C41E1E;
+  color: #EFE9DF;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #EFE9DF; }
+::-webkit-scrollbar-thumb { background: #C41E1E; }
+
+/* ─── Utility classes ─── */
+.font-display { font-family: var(--font-space-grotesk), sans-serif; }
+.font-body    { font-family: var(--font-inter), sans-serif; }
