@@ -9,7 +9,7 @@ const NAV_LINKS = [
 
 const SOCIAL_LINKS = [
   { href: 'mailto:sunchiehming@gmail.com', label: 'sunchiehming@gmail.com' },
-  { href: 'https://linkedin.com/in/jamie-sun', label: 'LinkedIn' },
+  { href: 'https://www.linkedin.com/in/chiehmingsun', label: 'LinkedIn' },
 ]
 
 export default function Footer() {

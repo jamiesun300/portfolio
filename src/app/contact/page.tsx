@@ -7,7 +7,7 @@ import PageTransition from '@/components/PageTransition'
 // Update with your real links and handles
 
 const SOCIAL = [
-  { label: 'LinkedIn', handle: 'Jamie Sun', href: 'https://linkedin.com/in/jamie-sun' },
+  { label: 'LinkedIn', handle: 'Chieh Ming Sun', href: 'https://www.linkedin.com/in/chiehmingsun' },
 ]
 
 const SERVICES = [
