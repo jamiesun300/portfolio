@@ -111,13 +111,14 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="relative"
             >
-              <div className="relative aspect-[3/4] max-h-[580px] overflow-hidden">
+              <div className="overflow-hidden">
                 <Image
-                  src="https://picsum.photos/seed/about-portrait/800/1067"
-                  alt="Designer portrait"
-                  fill
+                  src="/images/hero-card.png"
+                  alt="Jamie Sun — Visual Designer"
+                  width={800}
+                  height={600}
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
+                  className="w-full h-auto"
                 />
               </div>
               {/* Accents */}

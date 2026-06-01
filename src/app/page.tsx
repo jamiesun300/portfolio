@@ -117,19 +117,15 @@ export default function HomePage() {
             transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            {/* Hero gradient block */}
-            <div
-              className="relative aspect-[3/4] max-h-[680px]"
-              style={{
-                background: 'linear-gradient(145deg, #0D0D0D 0%, #1a1a1a 45%, #7a1010 75%, #C41E1E 100%)',
-              }}
-            >
-              {/* Subtle grain overlay */}
-              <div className="absolute inset-0 opacity-[0.06]"
-                style={{
-                  backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
-                  backgroundSize: '200px 200px',
-                }}
+            {/* Hero image */}
+            <div className="relative aspect-[4/3] max-h-[680px] overflow-hidden">
+              <Image
+                src="/images/hero-card.png"
+                alt="Jamie Sun — Visual Designer"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain"
               />
             </div>
 
