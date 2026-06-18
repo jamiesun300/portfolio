@@ -60,8 +60,10 @@ export const projects: Project[] = [
       'Built entirely from scratch in HTML/CSS/JS with no framework. Designed the homepage as an exported Illustrator artboard with transparent hit areas. Each word page features a split hero, scrolling photo strip, and a continuous pile animation using hand-drawn illustrations.',
     outcome:
       'A fully interactive 8-word demo covering 人情味, 緣分, 加油, 辛苦了, 小確幸, 撒嬌, 摸魚, and 將就 — with custom illustrations, real photography, and original content for each word.',
-    coverImage: '/lost-in-translation/lost in translation.jpg',
-    images: [],
+    coverImage: '/lost-in-translation/cover.jpg',
+    images: [
+      '/lost-in-translation/cover.jpg',
+    ],
     featured: true,
   },
   {
