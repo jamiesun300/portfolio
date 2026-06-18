@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost in Translation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0ede8;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.90);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .nav-logo {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #0D0D0D;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #888; text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #0D0D0D; }
+  .nav-search {
+    width: 30px; height: 30px; border: 1.5px solid #0D0D0D;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 14px; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-search:hover { background: #0D0D0D; color: white; }
+
+  /* ── ARTBOARD WRAPPER ── */
+  .artboard-wrap {
+    margin-top: 62px;
+    position: relative;
+    width: 100%;
+    /* height set by JS */
+  }
+
+  /* The design image — scales to full width */
+  .artboard-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ── CLICKABLE WORD OVERLAYS ── */
+  /* Positioned as % of image so they scale with it */
+  .hit {
+    position: absolute;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .hit:hover {
+    background: rgba(185, 28, 28, 0.08);
+    outline: 1.5px solid rgba(185, 28, 28, 0.3);
+  }
+
+  /* ── SEARCH BAR ── */
+  .search-wrap {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(480px, 70%);
+    z-index: 10;
+  }
+  .search-inner {
+    display: flex;
+    border: 1.5px solid #0D0D0D;
+    background: white;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.06);
+  }
+  .search-inner input {
+    flex: 1; padding: 11px 16px; font-size: 13px;
+    border: none; outline: none; background: transparent;
+    color: #0D0D0D; font-family: inherit; font-style: italic;
+  }
+  .search-inner input::placeholder { color: #bbb; }
+  .search-inner button {
+    background: #0D0D0D; color: white; border: none;
+    padding: 11px 20px; font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: background 0.2s;
+  }
+  .search-inner button:hover { background: #B91C1C; }
+
+  /* ── CATEGORY STRIP ── */
+  .cat-strip {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.93);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0,0,0,0.07);
+    padding: 11px 48px;
+    display: flex; align-items: center; gap: 20px; z-index: 100;
+  }
+  .cat-label {
+    font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #888; white-space: nowrap;
+  }
+  .pills { display: flex; gap: 8px; }
+  .pill {
+    padding: 5px 14px; border-radius: 20px; font-size: 10px;
+    letter-spacing: 0.04em; cursor: pointer; transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .pill.active { background: #0D0D0D; color: white; }
+  .pill.inactive { border-color: rgba(0,0,0,0.18); color: #888; }
+  .pill.inactive:hover { border-color: #0D0D0D; color: #0D0D0D; }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: fixed; pointer-events: none;
+    background: #0D0D0D; color: white;
+    padding: 7px 13px; border-radius: 2px;
+    font-size: 11px; letter-spacing: 0.02em;
+    opacity: 0; transition: opacity 0.15s; z-index: 200;
+    white-space: nowrap; transform: translate(-50%, -130%);
+  }
+  .tooltip.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Lost in Translation</div>
+  <div class="nav-links">
+    <a href="#">Browse</a>
+    <a href="#">About</a>
+    <div class="nav-search">⌕</div>
+  </div>
+</nav>
+
+<!-- ARTBOARD: image + overlays -->
+<div class="artboard-wrap" id="artboard">
+
+  <!-- Your exact design as the visual -->
+  <img class="artboard-img" src="lost in translation.jpg" alt="Lost in Translation homepage" id="artImg"/>
+
+  <!-- ── WORD HIT AREAS (% positions matched to image) ── -->
+
+  <!-- 緣分 -->
+  <div class="hit" style="left:34%; top:13%; width:43%; height:10%;"
+       data-tip="The belief that connections are fated."
+       onclick="goToWord('yuanfen')"></div>
+
+  <!-- 將就 -->
+  <div class="hit" style="left:20%; top:35%; width:14%; height:7%;"
+       data-tip="Accepting less than you wanted, without complaint."
+       onclick="goToWord('jiangjiu')"></div>
+
+  <!-- 加油 -->
+  <div class="hit" style="left:43%; top:33%; width:24%; height:8%;"
+       data-tip="Keep going. You've got this."
+       onclick="goToWord('jiayou')"></div>
+
+  <!-- 辛苦了 -->
+  <div class="hit" style="left:5%; top:47%; width:34%; height:7%;"
+       data-tip="Acknowledgement of someone's effort and hardship."
+       onclick="goToWord('xinkule')"></div>
+
+  <!-- 小確幸 -->
+  <div class="hit" style="left:49%; top:47%; width:47%; height:7%;"
+       data-tip="The small, certain happiness in everyday moments."
+       onclick="goToWord('xiaoqueXing')"></div>
+
+  <!-- 人情味 -->
+  <div class="hit" style="left:30%; top:55%; width:62%; height:8%;"
+       data-tip="The irreplaceable warmth of genuine human connection."
+       onclick="goToWord('renqingwei')"></div>
+
+  <!-- 撒嬌 -->
+  <div class="hit" style="left:5%; top:86%; width:34%; height:7%;"
+       data-tip="Acting cute to get what you want from someone who loves you."
+       onclick="goToWord('sajiao')"></div>
+
+  <!-- 摸魚 -->
+  <div class="hit" style="left:55%; top:89%; width:32%; height:6%;"
+       data-tip="Slacking off while pretending to work."
+       onclick="goToWord('moyu')"></div>
+
+  <!-- Search bar -->
+  <div class="search-wrap">
+    <div class="search-inner">
+      <input type="text" placeholder="search a word or feeling..."
+             id="searchInput" onkeydown="handleSearch(event)"/>
+      <button onclick="runSearch()">Search</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- CATEGORY STRIP -->
+<div class="cat-strip">
+  <span class="cat-label">Browse by</span>
+  <div class="pills">
+    <div class="pill active"   onclick="filterPill(this)">All</div>
+    <div class="pill inactive" onclick="filterPill(this)">Emotions 情感</div>
+    <div class="pill inactive" onclick="filterPill(this)">Social 社交</div>
+    <div class="pill inactive" onclick="filterPill(this)">Values 價值</div>
+    <div class="pill inactive" onclick="filterPill(this)">Daily Life 日常</div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  // Pill filter
+  function filterPill(el) {
+    document.querySelectorAll('.pill').forEach(p => {
+      p.classList.remove('active'); p.classList.add('inactive');
+    });
+    el.classList.remove('inactive'); el.classList.add('active');
+  }
+
+  // Tooltip on word hover
+  const tooltip = document.getElementById('tooltip');
+  document.querySelectorAll('.hit').forEach(h => {
+    h.addEventListener('mouseenter', () => {
+      tooltip.textContent = h.dataset.tip;
+      tooltip.classList.add('visible');
+    });
+    h.addEventListener('mousemove', e => {
+      tooltip.style.left = e.clientX + 'px';
+      tooltip.style.top  = e.clientY + 'px';
+    });
+    h.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+  });
+
+  // Navigate to word detail
+  function goToWord(slug) {
+    window.location.href = 'word.html?w=' + slug;
+  }
+
+  // Search — maps Chinese characters, pinyin, or English to the right slug
+  const SEARCH_MAP = {
+    '人情味':'renqingwei', 'renqingwei':'renqingwei', 'human warmth':'renqingwei',
+    '緣分':'yuanfen',      'yuanfen':'yuanfen',       'fate':'yuanfen', 'destiny':'yuanfen',
+    '加油':'jiayou',       'jiayou':'jiayou',          'keep going':'jiayou',
+    '辛苦了':'xinkule',    'xinkule':'xinkule',        'hard work':'xinkule',
+    '小確幸':'xiaoqueXing','xiaoqueXing':'xiaoqueXing','small happiness':'xiaoqueXing',
+    '撒嬌':'sajiao',       'sajiao':'sajiao',          'cute':'sajiao',
+    '摸魚':'moyu',         'moyu':'moyu',              'slack':'moyu',  'slacking':'moyu',
+    '將就':'jiangjiu',     'jiangjiu':'jiangjiu',      'make do':'jiangjiu',
+  };
+
+  function handleSearch(e) { if (e.key === 'Enter') runSearch(); }
+  function runSearch() {
+    const raw  = document.getElementById('searchInput').value.trim();
+    const key  = raw.toLowerCase();
+    const slug = SEARCH_MAP[raw] || SEARCH_MAP[key] || raw;
+    if (raw) window.location.href = 'word.html?w=' + encodeURIComponent(slug);
+  }
+</script>
+</body>
+</html>

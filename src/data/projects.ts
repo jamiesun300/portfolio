@@ -43,6 +43,28 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'untranslatable-taiwan',
+    title: 'Lost in Translation',
+    tagline: 'Taiwanese words that English cannot hold.',
+    category: 'UI/UX',
+    year: '2025',
+    client: 'Personal Project',
+    role: 'Designer, Developer, Illustrator',
+    tools: ['HTML/CSS/JS', 'Illustrator', 'Procreate'],
+    projectType: 'Interactive Editorial Platform',
+    concept:
+      'An interactive web platform exploring Taiwanese Mandarin words that have no direct English translation — words like 人情味, 緣分, and 小確幸. Each word gets its own editorial page with AI explanation, cultural context, photography, and a typography motion animation.',
+    challenge:
+      'Designing a system that makes untranslatable concepts feel felt, not just defined — using motion, photography, and typography to carry meaning that words alone cannot.',
+    process:
+      'Built entirely from scratch in HTML/CSS/JS with no framework. Designed the homepage as an exported Illustrator artboard with transparent hit areas. Each word page features a split hero, scrolling photo strip, and a continuous pile animation using hand-drawn illustrations.',
+    outcome:
+      'A fully interactive 8-word demo covering 人情味, 緣分, 加油, 辛苦了, 小確幸, 撒嬌, 摸魚, and 將就 — with custom illustrations, real photography, and original content for each word.',
+    coverImage: '/lost-in-translation/lost in translation.jpg',
+    images: [],
+    featured: true,
+  },
+  {
     slug: 'amas-kitchen',
     title: "AMA's Kitchen",
     tagline: 'A board game about love, food, and family.',

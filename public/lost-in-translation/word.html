@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost in Translation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0D0D0D;
+    --red: #B91C1C;
+    --cream: #f0ede8;
+    --gray: #888;
+    --border: #e8e3dc;
+  }
+
+  body {
+    background: var(--cream);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--ink);
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    padding: 18px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(240,237,232,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .nav-logo { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .nav-back {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gray); text-decoration: none; transition: color 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-back:hover { color: var(--ink); }
+
+  /* ── SECTION LABEL ── */
+  .sec-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gray);
+    margin-bottom: 24px;
+  }
+  .sec-label::before { content: ''; width: 24px; height: 1px; background: var(--red); flex-shrink: 0; }
+
+  /* ════════════════════════
+     1. SPLIT HERO
+  ════════════════════════ */
+  .hero {
+    margin-top: 62px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    height: 520px;
+  }
+  .hero-left {
+    background: var(--ink); padding: 56px 52px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .hero-tag {
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); margin-bottom: 16px;
+  }
+  .hero-zh {
+    font-size: 108px; font-weight: 700; color: white;
+    line-height: 0.9; letter-spacing: -0.03em;
+  }
+  .hero-pinyin {
+    font-size: 14px; color: rgba(255,255,255,0.4);
+    margin-top: 16px; letter-spacing: 0.08em;
+  }
+  .hero-en {
+    font-size: 14px; color: rgba(255,255,255,0.55);
+    margin-top: 8px; font-style: italic; letter-spacing: 0.02em;
+  }
+
+  /* ── PHOTO SLIDESHOW ── */
+  .hero-right { position: relative; overflow: hidden; background: #1a1a1a; }
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+  .slide.active { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.05) saturate(0.85); }
+  .slide-dots {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 7px; z-index: 10;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.3); cursor: pointer;
+    transition: background 0.3s; border: none; padding: 0;
+  }
+  .dot.active { background: white; }
+
+  /* ════════════════════════
+     2. CONTENT COLUMNS
+  ════════════════════════ */
+  .content-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    background: white; border-bottom: 1px solid var(--border);
+  }
+  .content-col { padding: 52px 56px; border-right: 1px solid var(--border); }
+  .content-col:last-child { border-right: none; }
+  .content-col p { font-size: 14px; line-height: 1.9; color: #333; }
+  .content-col p + p { margin-top: 16px; }
+  .pull-quote {
+    margin-top: 28px; padding-left: 18px;
+    border-left: 2px solid var(--red);
+    font-size: 13px; font-style: italic; color: #555; line-height: 1.75;
+  }
+
+  /* ════════════════════════
+     3. PHOTO STRIP
+  ════════════════════════ */
+  .strip { display: flex; background: var(--ink); height: 300px; overflow: hidden; }
+  .strip-anchor {
+    width: 72px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .strip-anchor span {
+    writing-mode: vertical-rl;
+    font-size: 38px; font-weight: 700; color: white;
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .strip-photos { flex: 1; overflow: hidden; display: flex; align-items: stretch; padding: 16px 0; }
+  .strip-track {
+    display: flex; gap: 3px;
+    animation: scrollTrack 22s linear infinite;
+    align-items: stretch; padding: 0 16px; will-change: transform;
+  }
+  .strip-track:hover { animation-play-state: paused; }
+  @keyframes scrollTrack {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .strip-photo { flex-shrink: 0; position: relative; overflow: hidden; background: #333; }
+  .strip-photo img {
+    height: 100%; width: 100%; object-fit: cover;
+    filter: grayscale(20%) contrast(1.05); transition: filter 0.5s, transform 0.6s;
+  }
+  .strip-photo:hover img { filter: grayscale(0%); transform: scale(1.04); }
+  .strip-fade {
+    width: 56px; flex-shrink: 0;
+    background: linear-gradient(to right, transparent, var(--ink));
+    pointer-events: none;
+  }
+
+  /* ════════════════════════
+     4. REAL-LIFE EXAMPLES
+  ════════════════════════ */
+  .examples { background: #f8f6f2; padding: 56px 80px; border-bottom: 1px solid var(--border); }
+  .example-item {
+    padding: 22px 26px; border-left: 2px solid var(--border);
+    margin-bottom: 14px; background: white; transition: border-color 0.3s;
+  }
+  .example-item:hover { border-left-color: var(--red); }
+  .example-item:last-child { margin-bottom: 0; }
+  .example-item p { font-size: 14px; font-style: italic; color: #333; line-height: 1.85; }
+  .ex-tag { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #bbb; margin-top: 10px; }
+
+  /* ════════════════════════
+     5. PILE MOTION
+  ════════════════════════ */
+  .typo-motion { position: relative; height: 680px; overflow: hidden; background: #080808; }
+  .pile-label {
+    position: absolute; top: 32px; left: 48px; z-index: 20;
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+  }
+  .pile-canvas { position: absolute; inset: 0; }
+
+  /* ════════════════════════
+     6. RELATED WORDS
+  ════════════════════════ */
+  .related { padding: 52px 80px; background: white; border-top: 1px solid var(--border); }
+  .related-cards { display: flex; gap: 12px; flex-wrap: wrap; }
+  .related-card {
+    padding: 14px 22px; border: 1.5px solid var(--ink);
+    border-radius: 2px; cursor: pointer; text-decoration: none;
+    display: block; transition: background 0.25s;
+  }
+  .related-card:hover { background: var(--ink); }
+  .related-card:hover .rc-pinyin { color: rgba(255,255,255,0.4); }
+  .related-card:hover .rc-zh { color: white; }
+  .rc-pinyin { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+  .rc-zh { font-size: 24px; font-weight: 700; margin-top: 3px; color: var(--ink); }
+
+  /* ── NOT FOUND ── */
+  .not-found {
+    margin-top: 62px; padding: 120px 80px;
+    text-align: center;
+  }
+  .not-found h2 { font-size: 48px; font-weight: 700; margin-bottom: 16px; }
+  .not-found p { font-size: 14px; color: var(--gray); }
+  .not-found a { color: var(--red); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Lost in Translation</div>
+  <a class="nav-back" href="index.html">← Back</a>
+</nav>
+
+<div id="page-root"></div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   WORD DATABASE
+   Add more words here as content is ready.
+══════════════════════════════════════════════════ */
+const DB = {
+
+  renqingwei: {
+    zh:     '人情味',
+    pinyin: 'rén qíng wèi',
+    en:     '"Human warmth"',
+    tag:    'Taiwanese Mandarin · Emotion',
+    photos: [
+      'images/photo-1530014708989-55a898ad9552.avif',
+      'images/photo-1530324652194-d78318776d5c.avif',
+      'images/photo-1583654979589-aa7a6053a0d6.avif',
+      'images/photo-1668269877371-d25706a3e5f9.avif',
+    ],
+    explanation: [
+      '人情味 describes a quality of warmth, generosity, and genuine care that exists between people — especially strangers or acquaintances. It is the feeling of being looked after not because someone has to, but because they want to.',
+      'In English, we might reach for "human warmth" or "heartfelt kindness," but neither captures the full meaning. Those phrases describe a feeling. 人情味 describes a texture of life — an atmosphere that a place, a community, or a person can have or lack entirely.',
+    ],
+    context: [
+      'In Taiwan, 人情味 is considered one of the defining qualities of Taiwanese culture — something locals are deeply proud of and foreigners consistently remark on. It shows up in small moments: a vendor giving you extra because you come every week, a neighbour saving food for you without being asked.',
+    ],
+    pullQuote: 'Taiwan\'s 人情味 isn\'t a performance of politeness — it\'s a genuine investment in the people around you, even those you may never see again.',
+    examples: [
+      { text: 'You\'ve been coming to this breakfast shop every morning for two weeks. Today the owner brings you your usual order before you even sit down, and waves off the payment. That\'s 人情味.', tag: 'Everyday life · Taiwan' },
+      { text: 'A stranger sees you struggling with directions in a night market. Instead of pointing, they walk you there themselves — even though it takes them ten minutes out of their way.', tag: 'Social interaction · Taiwan' },
+      { text: 'Your neighbour drops off a container of soup because they made too much. No occasion, no reason. Just the quiet acknowledgement that you exist and that matters to them.', tag: 'Community · Daily life' },
+    ],
+    pileWords: [
+      { text:'人情味',      fs:90, color:'rgba(255,255,255,0.95)' },
+      { text:'Community',   fs:64, color:'rgba(255,255,255,0.9)'  },
+      { text:'Belonging',   fs:52, color:'rgba(255,255,255,0.85)' },
+      { text:'Hospitality', fs:44, color:'rgba(255,255,255,0.8)'  },
+      { text:'Kindness',    fs:50, color:'rgba(255,255,255,0.75)' },
+      { text:'Neighborhood',fs:38, color:'rgba(255,255,255,0.7)'  },
+      { text:'Connection',  fs:56, color:'rgba(255,255,255,0.8)'  },
+      { text:'Generosity',  fs:46, color:'rgba(255,255,255,0.75)' },
+      { text:'體貼',        fs:58, color:'rgba(255,255,255,0.8)'  },
+      { text:'熱心',        fs:52, color:'rgba(255,255,255,0.7)'  },
+      { text:'將心比心',    fs:40, color:'rgba(255,255,255,0.75)' },
+      { text:'Community',   fs:24, color:'rgba(255,255,255,0.2)'  },
+      { text:'Belonging',   fs:20, color:'rgba(255,255,255,0.15)' },
+      { text:'Hospitality', fs:18, color:'rgba(255,255,255,0.12)' },
+      { text:'Kindness',    fs:22, color:'rgba(255,255,255,0.18)' },
+      { text:'Neighborhood',fs:16, color:'rgba(255,255,255,0.1)'  },
+      { text:'Connection',  fs:20, color:'rgba(255,255,255,0.15)' },
+      { text:'Generosity',  fs:18, color:'rgba(255,255,255,0.12)' },
+      { text:'rén qíng wèi',fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'Human warmth',fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'xinkule',     pinyin:'xīn kǔ le',     zh:'辛苦了' },
+      { slug:'yuanfen',     pinyin:'yuán fèn',       zh:'緣分'   },
+      { slug:'sajiao',      pinyin:'sā jiāo',        zh:'撒嬌'   },
+      { slug:'jiayou',      pinyin:'jiā yóu',        zh:'加油'   },
+    ],
+  },
+
+  yuanfen: {
+    zh:     '緣分',
+    pinyin: 'yuán fèn',
+    en:     '"The fate that brings people together"',
+    tag:    'Taiwanese Mandarin · Fate & Connection',
+    photos: [
+      'images/people 1.avif',
+      'images/people 2.avif',
+      'images/people 3.avif',
+      'images/people 4.avif',
+    ],
+    imgs: [
+      { src:'images/緣分 50-01.png', w:130, redBlack:true },
+      { src:'images/緣分 50-02.png', w:100, redBlack:true },
+      { src:'images/緣分 50-03.png', w:120, redBlack:true },
+      { src:'images/緣分 50-04.png', w:80,  redBlack:true },
+      { src:'images/緣分 50-05.png', w:110, redBlack:true },
+      { src:'images/緣分 50-06.png', w:90,  redBlack:true },
+      { src:'images/緣分 50-07.png', w:70,  redBlack:true },
+      { src:'images/緣分 50-08.png', w:100, redBlack:true },
+      { src:'images/緣分 50-09.png', w:85,  redBlack:true },
+      { src:'images/緣分 50-10.png', w:75,  redBlack:true },
+      { src:'images/緣分 50-11.png', w:95,  redBlack:true },
+    ],
+    explanation: [
+      '緣分 is the belief that every meaningful encounter — a friendship, a love, even a brief exchange with a stranger — was predestined by invisible forces beyond your control. It is not luck. It is not coincidence. It is 緣分: the thread that was always going to pull two people together.',
+      'English has "fate" and "destiny," but these words feel heavy, dramatic. 緣分 can apply to something as small as sitting next to someone on a train who changes your perspective. It holds space for the ordinary and the extraordinary alike.',
+    ],
+    context: [
+      'In Taiwanese culture, 緣分 is used to make sense of the relationships that feel unexplainably right — the friend you met by accident who became essential, the neighbourhood you ended up in that shaped who you are. It removes the pressure of forcing connection and replaces it with a kind of trust.',
+    ],
+    pullQuote: '有緣 — to have 緣分 with someone. In Taiwan, this isn\'t mystical. It\'s the quiet acknowledgement that some meetings were always meant to happen.',
+    examples: [
+      { text: 'You take a wrong turn in Tainan and end up at a tiny temple. The elderly man sweeping outside speaks no English, you speak little Mandarin — but you spend an hour there, communicating through gestures and smiles. You never forget it. That\'s 緣分.', tag: 'Travel · Chance encounter' },
+      { text: 'Two strangers end up seated next to each other on a 高鐵 train from Taipei to Kaohsiung. By the time they arrive, they\'ve exchanged numbers. Ten years later, they\'re still close friends. Taiwanese people would say: 這就是緣分。', tag: 'Friendship · Daily life' },
+      { text: 'In Taiwan, couples often say they were brought together by 緣分 rather than by choice. Not because they had no agency — but because the feeling of rightness is so strong, it could only have been written somewhere, long before they met.', tag: 'Relationships · Culture' },
+    ],
+    pileWords: [
+      { text:'緣分',       fs:90, color:'rgba(255,255,255,0.95)' },
+      { text:'Fate',       fs:72, color:'rgba(255,255,255,0.9)'  },
+      { text:'Destiny',    fs:58, color:'rgba(255,255,255,0.85)' },
+      { text:'Connection', fs:50, color:'rgba(255,255,255,0.8)'  },
+      { text:'Chance',     fs:64, color:'rgba(255,255,255,0.75)' },
+      { text:'Encounter',  fs:44, color:'rgba(255,255,255,0.7)'  },
+      { text:'Belonging',  fs:52, color:'rgba(255,255,255,0.8)'  },
+      { text:'Thread',     fs:40, color:'rgba(255,255,255,0.7)'  },
+      { text:'命運',       fs:58, color:'rgba(255,255,255,0.8)'  },
+      { text:'相遇',       fs:52, color:'rgba(255,255,255,0.75)' },
+      { text:'注定',       fs:46, color:'rgba(255,255,255,0.7)'  },
+      { text:'有緣',       fs:60, color:'rgba(255,255,255,0.8)'  },
+      { text:'Fate',       fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Destiny',    fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Connection', fs:20, color:'rgba(255,255,255,0.18)' },
+      { text:'Chance',     fs:24, color:'rgba(255,255,255,0.2)'  },
+      { text:'Encounter',  fs:16, color:'rgba(255,255,255,0.12)' },
+      { text:'Belonging',  fs:20, color:'rgba(255,255,255,0.15)' },
+      { text:'yuán fèn',   fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'fated connection', fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+      { slug:'jiayou',     pinyin:'jiā yóu',      zh:'加油'   },
+      { slug:'xiaoqueXing',pinyin:'xiǎo què xìng',zh:'小確幸' },
+      { slug:'xinkule',    pinyin:'xīn kǔ le',    zh:'辛苦了' },
+    ],
+  },
+
+  jiayou: {
+    zh:     '加油',
+    imgs: [
+      { src:'images/gas .png',  w:130, redBlack:true },
+      { src:'images/gas 1.png', w:110, redBlack:true },
+      { src:'images/gas 2.png', w:100, redBlack:true },
+      { src:'images/gas 3.png', w:90,  redBlack:true },
+      { src:'images/gas 4.png', w:120, redBlack:true },
+      { src:'images/gas 5.png', w:85,  redBlack:true },
+      { src:'images/gas 6.png', w:95,  redBlack:true },
+    ],
+    pinyin: 'jiā yóu',
+    en:     '"Keep going. You\'ve got this."',
+    tag:    'Taiwanese Mandarin · Encouragement',
+    photos: [
+      'images/gas1.avif',
+      'images/gas2.avif',
+      'images/gas3.avif',
+      'images/gas4.avif',
+    ],
+    explanation: [
+      '加油 literally means "add oil" — like fuelling an engine. But its real meaning is pure encouragement: keep going, push through, you have everything you need to do this. It is said at finish lines, before exams, when a friend is struggling.',
+      'English has "good luck" and "you\'ve got this," but 加油 is more active. It doesn\'t wish for luck — it tells you to generate your own momentum. It\'s a push, not a wish.',
+    ],
+    context: [
+      'In Taiwan, 加油 is everywhere — yelled at marathon runners, texted to friends before big presentations, written on walls and banners at sporting events. It carries no caveat. No "I hope it goes well." Just: fuel up and go.',
+    ],
+    pullQuote: '加油 is what you say when words aren\'t enough but silence feels wrong. It\'s the sound of someone believing in you out loud.',
+    examples: [
+      { text: 'Your friend has been studying for the 國考 for two years. On exam morning, every message they receive says one thing: 加油. There\'s nothing else to say — and nothing more they need to hear.', tag: 'Exam season · Taiwan' },
+      { text: 'At a local baseball game in Taichung, the whole crowd erupts with 加油! 加油! each time a batter steps up. It\'s not just encouragement — it\'s collective energy being transferred.', tag: 'Sport · Community' },
+      { text: 'A colleague has been working 14-hour days on a project that\'s falling behind. Their manager stops by their desk and says simply: 加油. No solution, no pressure — just acknowledgement and belief.', tag: 'Work culture · Daily life' },
+    ],
+    pileWords: [
+      { text:'加油',       fs:90, color:'rgba(255,255,255,0.95)' },
+      { text:'Push',       fs:72, color:'rgba(255,255,255,0.9)'  },
+      { text:'Momentum',   fs:52, color:'rgba(255,255,255,0.85)' },
+      { text:'Strength',   fs:60, color:'rgba(255,255,255,0.8)'  },
+      { text:'Courage',    fs:48, color:'rgba(255,255,255,0.75)' },
+      { text:'Forward',    fs:56, color:'rgba(255,255,255,0.8)'  },
+      { text:'Persist',    fs:44, color:'rgba(255,255,255,0.7)'  },
+      { text:'堅持',       fs:64, color:'rgba(255,255,255,0.85)' },
+      { text:'努力',       fs:52, color:'rgba(255,255,255,0.75)' },
+      { text:'勇氣',       fs:48, color:'rgba(255,255,255,0.7)'  },
+      { text:'Push',       fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Momentum',   fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Forward',    fs:20, color:'rgba(255,255,255,0.12)' },
+      { text:'Courage',    fs:16, color:'rgba(255,255,255,0.1)'  },
+      { text:'jiā yóu',    fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'add oil',    fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'xinkule',    pinyin:'xīn kǔ le',    zh:'辛苦了' },
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+      { slug:'yuanfen',    pinyin:'yuán fèn',     zh:'緣分'   },
+    ],
+  },
+
+  xinkule: {
+    zh:     '辛苦了',
+    pinyin: 'xīn kǔ le',
+    en:     '"I see how hard you\'ve worked"',
+    tag:    'Taiwanese Mandarin · Gratitude',
+    imgs: [
+      { src:'images/hard.png',   w:130, screen:true },
+      { src:'images/hard 1.png', w:110, screen:true },
+      { src:'images/hard 2.png', w:100, screen:true },
+      { src:'images/hard 3.png', w:90,  screen:true },
+      { src:'images/hard 4.png', w:120, screen:true },
+      { src:'images/hard 5.png', w:85,  screen:true },
+    ],
+    photos: [
+      'images/photo-1523380262778-076eb862d38f.avif',
+      'images/photo-1553877522-43269d4ea984.avif',
+      'images/photo-1661708536171-6ab86f702736.avif',
+      'images/photo-1686616099522-80809657107c.avif',
+      'images/photo-1745333424151-b9261eae4528.avif',
+    ],
+    explanation: [
+      '辛苦了 acknowledges someone\'s effort, hardship, and perseverance — not just their result. It says: I see you. I see what this cost you. And I honour that. It is spoken after long days, hard tasks, thankless labour.',
+      '"Thank you for your hard work" is the closest English translation, but it sounds managerial and formal. 辛苦了 is warmer — it\'s what a mother says when her child comes home exhausted, what a colleague says at the end of a gruelling project week.',
+    ],
+    context: [
+      'In Taiwanese workplaces and families, 辛苦了 is one of the most important phrases you can say. It costs nothing, but it lands deeply. It validates effort regardless of outcome — which is rare, and why it matters.',
+    ],
+    pullQuote: 'Unlike "good job," 辛苦了 doesn\'t evaluate your result. It witnesses your effort. That difference is everything.',
+    examples: [
+      { text: 'A delivery rider arrives in pouring rain with your order. As you take it, you say: 辛苦了. It\'s not just politeness — it\'s an acknowledgement that they were out there working in conditions you weren\'t.', tag: 'Service · Respect' },
+      { text: 'A team finishes a brutal product launch after weeks of late nights. The manager walks around the office and says 辛苦了 to each person individually. Nobody checks their phone for the next ten minutes.', tag: 'Work culture · Taiwan' },
+      { text: 'Your parent picks you up after your university entrance exams. They don\'t ask how it went. They just say: 辛苦了. That\'s all you needed.', tag: 'Family · Daily life' },
+    ],
+    pileWords: [
+      { text:'辛苦了',     fs:80, color:'rgba(255,255,255,0.95)' },
+      { text:'Effort',     fs:68, color:'rgba(255,255,255,0.9)'  },
+      { text:'Witness',    fs:52, color:'rgba(255,255,255,0.85)' },
+      { text:'Labour',     fs:56, color:'rgba(255,255,255,0.8)'  },
+      { text:'Honour',     fs:48, color:'rgba(255,255,255,0.75)' },
+      { text:'Recognition',fs:38, color:'rgba(255,255,255,0.7)'  },
+      { text:'Endurance',  fs:50, color:'rgba(255,255,255,0.75)' },
+      { text:'付出',       fs:60, color:'rgba(255,255,255,0.8)'  },
+      { text:'堅持',       fs:52, color:'rgba(255,255,255,0.75)' },
+      { text:'感謝',       fs:46, color:'rgba(255,255,255,0.7)'  },
+      { text:'Effort',     fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Labour',     fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Honour',     fs:20, color:'rgba(255,255,255,0.12)' },
+      { text:'xīn kǔ le', fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'you worked hard', fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'jiayou',     pinyin:'jiā yóu',      zh:'加油'   },
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+      { slug:'yuanfen',    pinyin:'yuán fèn',     zh:'緣分'   },
+    ],
+  },
+
+  xiaoqueXing: {
+    zh:     '小確幸',
+    pinyin: 'xiǎo què xìng',
+    en:     '"The small, certain happiness"',
+    tag:    'Taiwanese Mandarin · Joy',
+    imgs: [
+      { src:'images/fortune-01.png', w:120, redBlack:true },
+      { src:'images/fortune-02.png', w:95,  redBlack:true },
+      { src:'images/fortune-03.png', w:110, redBlack:true },
+      { src:'images/fortune-04.png', w:80,  redBlack:true },
+      { src:'images/fortune-05.png', w:100, redBlack:true },
+      { src:'images/fortune-06.png', w:85,  redBlack:true },
+      { src:'images/fortune-07.png', w:70,  redBlack:true },
+      { src:'images/fortune-08.png', w:105, redBlack:true },
+      { src:'images/fortune-09.png', w:90,  redBlack:true },
+    ],
+    photos: [
+      'images/photo-1613892069338-d4dc16dc2530.avif',
+      'images/photo-1631067557824-4a56467086a0.avif',
+      'images/photo-1707404760686-0e1744caefa2.avif',
+      'images/photo-1708481736382-af81348e8b57.avif',
+      'images/photo-1766758195244-1e6621460855.avif',
+    ],
+    explanation: [
+      '小確幸 describes the small, reliable pleasures that make daily life worth living — the first sip of tea in the morning, a seat on the train when you\'re tired, rain starting exactly when you step inside. Small. Certain. Happy.',
+      'The concept comes from Japanese writer Haruki Murakami, but it has been fully absorbed into Taiwanese culture and speech. It\'s a philosophy as much as a phrase: that joy doesn\'t have to be grand to be real.',
+    ],
+    context: [
+      'In a city as fast-paced and dense as Taipei, 小確幸 represents a conscious practice — the choice to notice the small good things instead of waiting for the large ones. It\'s resistance, in a quiet way, against the idea that happiness requires more.',
+    ],
+    pullQuote: '小確幸 isn\'t settling for less. It\'s knowing exactly where happiness already lives — in the specific, the small, the certain.',
+    examples: [
+      { text: 'Friday evening, 7pm. You buy a cup of 珍珠奶茶 from your regular spot and take the long way home through the lit-up streets. Nobody\'s waiting for you. Nothing\'s due. This is 小確幸.', tag: 'Evening ritual · Taipei' },
+      { text: 'The bakery near your office puts out 菠蘿麵包 fresh at 3pm. You\'ve timed your break perfectly. The warmth through the paper bag. That\'s it. That\'s 小確幸.', tag: 'Food · Daily life' },
+      { text: 'You\'ve been working from home all week. Saturday morning, the window is open, there\'s a breeze, and a cat jumps onto the sill. You don\'t reach for your phone. You just sit there. 小確幸.', tag: 'Quiet moments · Everyday' },
+    ],
+    pileWords: [
+      { text:'小確幸',     fs:80, color:'rgba(255,255,255,0.95)' },
+      { text:'Small',      fs:72, color:'rgba(255,255,255,0.9)'  },
+      { text:'Certain',    fs:58, color:'rgba(255,255,255,0.85)' },
+      { text:'Joy',        fs:80, color:'rgba(255,255,255,0.8)'  },
+      { text:'Stillness',  fs:46, color:'rgba(255,255,255,0.75)' },
+      { text:'Enough',     fs:62, color:'rgba(255,255,255,0.8)'  },
+      { text:'Present',    fs:48, color:'rgba(255,255,255,0.7)'  },
+      { text:'滿足',       fs:60, color:'rgba(255,255,255,0.8)'  },
+      { text:'當下',       fs:52, color:'rgba(255,255,255,0.75)' },
+      { text:'幸福',       fs:58, color:'rgba(255,255,255,0.8)'  },
+      { text:'Small',      fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Joy',        fs:20, color:'rgba(255,255,255,0.18)' },
+      { text:'Enough',     fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Present',    fs:16, color:'rgba(255,255,255,0.12)' },
+      { text:'xiǎo què xìng', fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'small certain happiness', fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+      { slug:'yuanfen',    pinyin:'yuán fèn',     zh:'緣分'   },
+      { slug:'xinkule',    pinyin:'xīn kǔ le',   zh:'辛苦了' },
+    ],
+  },
+
+  sajiao: {
+    zh:     '撒嬌',
+    imgs: [
+      { src:'images/puppy.png',   w:130, screen:true },
+      { src:'images/puppy 1.png', w:110, screen:true },
+      { src:'images/puppy 2.png', w:100, screen:true },
+      { src:'images/puppy 3.png', w:90,  screen:true },
+      { src:'images/puppy 4.png', w:120, screen:true },
+    ],
+    pinyin: 'sā jiāo',
+    en:     '"Acting cute to get what you want"',
+    tag:    'Taiwanese Mandarin · Social',
+    photos: [
+      'images/puppy.avif',
+      'images/puppy 1.avif',
+      'images/puppy 2.avif',
+      'images/puppy 3.avif',
+    ],
+    explanation: [
+      '撒嬌 is the art of acting adorably needy, whiny, or cute — usually to a person who loves you — in order to get something: attention, a favour, forgiveness. It\'s endearing and manipulative at the same time, and both parties know it.',
+      'There is no single English word for this. "Acting cute" misses the strategic dimension. "Pouting" misses the warmth. 撒嬌 only works inside a relationship of affection — it is, in a way, a form of intimacy.',
+    ],
+    context: [
+      'In Taiwan, 撒嬌 is not childish — adults do it openly and skillfully. It has its own aesthetics: the tilted head, the drawn-out pronunciation, the grabbed sleeve. It softens conflict, accelerates forgiveness, and is considered charming rather than manipulative when done right.',
+    ],
+    pullQuote: '撒嬌 is only possible with someone who loves you. That\'s what makes it intimate rather than just annoying.',
+    examples: [
+      { text: 'You\'ve done something that upset your partner. Instead of a serious conversation, you tug their sleeve, make your voice go soft, and say their name three times. They try not to smile. They fail. That\'s 撒嬌 working.', tag: 'Relationships · Daily life' },
+      { text: 'A grown adult in a Taipei bubble tea shop 撒嬌s with their older sibling to get them to pay. The sibling rolls their eyes and gets their wallet out. This is considered normal and slightly charming.', tag: 'Family · Social' },
+      { text: 'In a meeting, a junior colleague wants to push back on a senior\'s idea but doesn\'t want to create friction. They use a soft, slightly playful tone — not quite 撒嬌, but close. It works. Taiwan runs on this.', tag: 'Work culture · Indirect communication' },
+    ],
+    pileWords: [
+      { text:'撒嬌',       fs:90, color:'rgba(255,255,255,0.95)' },
+      { text:'Charm',      fs:68, color:'rgba(255,255,255,0.9)'  },
+      { text:'Softness',   fs:52, color:'rgba(255,255,255,0.85)' },
+      { text:'Playful',    fs:58, color:'rgba(255,255,255,0.8)'  },
+      { text:'Intimacy',   fs:46, color:'rgba(255,255,255,0.75)' },
+      { text:'Cute',       fs:72, color:'rgba(255,255,255,0.8)'  },
+      { text:'Endearing',  fs:40, color:'rgba(255,255,255,0.7)'  },
+      { text:'依賴',       fs:58, color:'rgba(255,255,255,0.8)'  },
+      { text:'親密',       fs:50, color:'rgba(255,255,255,0.75)' },
+      { text:'Charm',      fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Playful',    fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Cute',       fs:24, color:'rgba(255,255,255,0.18)' },
+      { text:'sā jiāo',   fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'loveable persuasion', fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+      { slug:'yuanfen',    pinyin:'yuán fèn',     zh:'緣分'   },
+      { slug:'jiangjiu',   pinyin:'jiāng jiù',    zh:'將就'   },
+    ],
+  },
+
+  moyu: {
+    zh:     '摸魚',
+    imgs: [
+      { src:'images/fish.png',   w:140, redBlack:true },
+      { src:'images/fish 1.png', w:110, redBlack:true },
+      { src:'images/fish 2.png', w:100, redBlack:true },
+      { src:'images/fish 3.png', w:90,  redBlack:true },
+      { src:'images/fish 4.png', w:120, redBlack:true },
+      { src:'images/fish 5.png', w:80,  redBlack:true },
+      { src:'images/fish 6.png', w:95,  redBlack:true },
+    ],
+    pinyin: 'mō yú',
+    en:     '"Slacking off while pretending to work"',
+    tag:    'Taiwanese Mandarin · Daily Life',
+    photos: [
+      'images/photo-1601248981876-29b78bd607df.avif',
+      'images/photo-1616989161881-6c788f319bd7.avif',
+      'images/photo-1688488905878-76539479a5e1.avif',
+      'images/photo-1743195955051-9b45e8d36b2a.avif',
+    ],
+    explanation: [
+      '摸魚 literally means "to grope for fish" — catching fish by hand in murky water, slow and aimless. Figuratively it means wasting time at work: scrolling your phone, chatting, staring at the ceiling — while technically on the clock.',
+      'It\'s not aggressive laziness. It\'s passive, almost artful avoidance — the performance of working without the substance. Everyone does it. Nobody admits it. It\'s a universal human behaviour that Mandarin happened to name perfectly.',
+    ],
+    context: [
+      'In Taiwan\'s work culture — where long hours are common and overwork is sometimes performed as dedication — 摸魚 is the quiet counter-movement. It\'s almost an act of self-preservation. When you can\'t leave early, you 摸魚.',
+    ],
+    pullQuote: '摸魚 is less about being lazy and more about being human — taking back tiny amounts of time from a system that wants all of it.',
+    examples: [
+      { text: 'It\'s 3:30pm on a Thursday. Your deadline isn\'t until Monday. You have a document open on your screen, but you haven\'t typed in 45 minutes. You\'re reading sports news. You are 摸魚.', tag: 'Office life · Universal' },
+      { text: 'A group chat in every Taiwanese company has at least one channel that is, functionally, a 摸魚 channel — memes, lunch recommendations, complaints about the photocopier. Work is happening. Elsewhere.', tag: 'Work culture · Taiwan' },
+      { text: 'You look busy. Your posture is professional. Your eyes are on screen. But you\'ve had the same spreadsheet open for two hours and what you\'re actually doing is planning your next trip. Advanced 摸魚.', tag: 'Everyday · Relateable' },
+    ],
+    pileWords: [
+      { text:'摸魚',       fs:90, color:'rgba(255,255,255,0.95)' },
+      { text:'Drift',      fs:68, color:'rgba(255,255,255,0.9)'  },
+      { text:'Wander',     fs:58, color:'rgba(255,255,255,0.85)' },
+      { text:'Idle',       fs:72, color:'rgba(255,255,255,0.8)'  },
+      { text:'Distracted', fs:40, color:'rgba(255,255,255,0.75)' },
+      { text:'Elsewhere',  fs:52, color:'rgba(255,255,255,0.8)'  },
+      { text:'Slow',       fs:60, color:'rgba(255,255,255,0.7)'  },
+      { text:'發呆',       fs:58, color:'rgba(255,255,255,0.8)'  },
+      { text:'放空',       fs:52, color:'rgba(255,255,255,0.75)' },
+      { text:'Drift',      fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Wander',     fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Idle',       fs:24, color:'rgba(255,255,255,0.18)' },
+      { text:'mō yú',     fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'groping for fish', fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'xiaoqueXing',pinyin:'xiǎo què xìng',zh:'小確幸' },
+      { slug:'jiangjiu',   pinyin:'jiāng jiù',    zh:'將就'   },
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+    ],
+  },
+
+  jiangjiu: {
+    zh:     '將就',
+    imgs: [
+      { src:'images/mug.png',   w:120, redBlack:true },
+      { src:'images/mug 1.png', w:100, redBlack:true },
+    ],
+    pinyin: 'jiāng jiù',
+    en:     '"Accepting less than you wanted"',
+    tag:    'Taiwanese Mandarin · Attitude',
+    photos: [
+      'images/photo-1477910191212-980963d84632.avif',
+      'images/photo-1533574254680-ff0c0d9e1f3e.avif',
+      'images/photo-1586753080433-3b98668a4085.avif',
+      'images/photo-1721476641860-73094df02266.avif',
+    ],
+    explanation: [
+      '將就 means to make do — to settle for something that isn\'t ideal, to accept a situation that isn\'t what you wanted, without complaint, because the alternative is worse or simply not available. It\'s pragmatic and slightly resigned at the same time.',
+      '"Settle for it," "make do," "it\'ll have to do" — English has phrases but not a single word that carries both the acceptance and the mild disappointment of 將就. It\'s not defeat. It\'s not contentment. It\'s something in between.',
+    ],
+    context: [
+      'In everyday Taiwanese life, 將就 shows up constantly: 將就一下啦 — just make do for now. It\'s said when the restaurant is full and you take the table by the bathroom, when the apartment isn\'t perfect but the rent is right, when the relationship has problems but breaking up feels harder.',
+    ],
+    pullQuote: '將就 isn\'t failure. It\'s the wisdom to know when to stop optimising and start living with what you have.',
+    examples: [
+      { text: 'The Airbnb has no hot water and the WiFi is weak. You say 將就一下 and decide to enjoy it anyway. By the end of the trip, these become the best parts of the story.', tag: 'Travel · Adaptability' },
+      { text: 'Your first apartment in Taipei is small, loud, and faces a brick wall. Your Taiwanese colleague shrugs: 先將就一下啦。 You live there three years. You love it.', tag: 'City life · Taiwan' },
+      { text: 'The group can\'t agree on where to eat. Someone sighs and says 將就一下 — and you end up at a random 熱炒 place down the alley that turns out to be incredible. 將就 as serendipity.', tag: 'Food · Social life' },
+    ],
+    pileWords: [
+      { text:'將就',       fs:90, color:'rgba(255,255,255,0.95)' },
+      { text:'Make do',    fs:68, color:'rgba(255,255,255,0.9)'  },
+      { text:'Settle',     fs:58, color:'rgba(255,255,255,0.85)' },
+      { text:'Compromise', fs:44, color:'rgba(255,255,255,0.8)'  },
+      { text:'Accept',     fs:62, color:'rgba(255,255,255,0.75)' },
+      { text:'Enough',     fs:52, color:'rgba(255,255,255,0.8)'  },
+      { text:'Adapt',      fs:48, color:'rgba(255,255,255,0.7)'  },
+      { text:'湊合',       fs:56, color:'rgba(255,255,255,0.8)'  },
+      { text:'忍耐',       fs:50, color:'rgba(255,255,255,0.75)' },
+      { text:'Make do',    fs:22, color:'rgba(255,255,255,0.2)'  },
+      { text:'Settle',     fs:18, color:'rgba(255,255,255,0.15)' },
+      { text:'Accept',     fs:20, color:'rgba(255,255,255,0.18)' },
+      { text:'Compromise', fs:16, color:'rgba(255,255,255,0.1)'  },
+      { text:'jiāng jiù', fs:13, color:'rgba(255,255,255,0.5)', ls:'0.18em' },
+      { text:'make do with it', fs:11, color:'rgba(255,255,255,0.3)', ls:'0.14em', italic:true },
+    ],
+    related: [
+      { slug:'moyu',       pinyin:'mō yú',        zh:'摸魚'   },
+      { slug:'xiaoqueXing',pinyin:'xiǎo què xìng',zh:'小確幸' },
+      { slug:'renqingwei', pinyin:'rén qíng wèi', zh:'人情味' },
+    ],
+  },
+
+};
+
+/* ══════════════════════════════════════════════════
+   ILLUSTRATIONS (shared across all words)
+══════════════════════════════════════════════════ */
+const IMGS = [
+  { src:'images/objects-02.png', w:160, redBlack:true },
+  { src:'images/objects-03.png', w:72,  redBlack:true },
+  { src:'images/objects-04.png', w:120, redBlack:true },
+  { src:'images/objects-05.png', w:68,  redBlack:true },
+  { src:'images/objects-06.png', w:100, redBlack:true },
+  { src:'images/objects-07.png', w:82,  redBlack:true },
+  { src:'images/objects-08.png', w:58,  redBlack:true },
+  { src:'images/objects-09.png', w:50,  redBlack:true },
+  { src:'images/objects-10.png', w:54,  redBlack:true },
+  { src:'images/objects-11.png', w:66,  redBlack:true },
+  { src:'images/objects-12.png', w:48,  redBlack:true },
+  { src:'images/objects-13.png', w:60,  redBlack:true },
+];
+
+/* ══════════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════════ */
+const params = new URLSearchParams(window.location.search);
+const slug   = params.get('w') || '';
+const word   = DB[slug];
+
+const root = document.getElementById('page-root');
+
+if (!word) {
+  // ── Word not found ──
+  document.title = 'Word not found — Lost in Translation';
+  root.innerHTML = `
+    <div class="not-found">
+      <h2>還沒有這個字</h2>
+      <p>We haven't added "<strong>${slug}</strong>" yet — but we're working on it.<br>
+      <a href="index.html">← Back to all words</a></p>
+    </div>`;
+} else {
+  document.title = `${word.zh} — Lost in Translation`;
+
+  // ── Build slides HTML ──
+  const slidesHTML = word.photos.map((src, i) =>
+    `<div class="slide${i === 0 ? ' active' : ''}"><img src="${src}" alt=""/></div>`
+  ).join('\n');
+
+  // ── Build strip photos HTML (set 1 + set 2 for seamless loop) ──
+  const widths = [220, 300, 260, 230];
+  const stripSet = word.photos.map((src, i) =>
+    `<div class="strip-photo" style="width:${widths[i % widths.length]}px;"><img src="${src}" alt=""/></div>`
+  ).join('\n');
+
+  // ── Build examples HTML ──
+  const examplesHTML = word.examples.map(ex => `
+    <div class="example-item">
+      <p>"${ex.text}"</p>
+      <div class="ex-tag">${ex.tag}</div>
+    </div>`
+  ).join('\n');
+
+  // ── Build related cards HTML ──
+  const relatedHTML = word.related.map(r => `
+    <a class="related-card" href="word.html?w=${r.slug}">
+      <div class="rc-pinyin">${r.pinyin}</div>
+      <div class="rc-zh">${r.zh}</div>
+    </a>`
+  ).join('\n');
+
+  root.innerHTML = `
+    <!-- 1. SPLIT HERO -->
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-tag">${word.tag}</div>
+        <div class="hero-zh">${word.zh}</div>
+        <div class="hero-pinyin">${word.pinyin}</div>
+        <div class="hero-en">${word.en}</div>
+      </div>
+      <div class="hero-right">
+        ${slidesHTML}
+        <div class="slide-dots" id="dots"></div>
+      </div>
+    </div>
+
+    <!-- 2. CONTENT COLUMNS -->
+    <div class="content-row">
+      <div class="content-col">
+        <div class="sec-label">AI Explanation</div>
+        ${word.explanation.map(p => `<p>${p}</p>`).join('\n')}
+      </div>
+      <div class="content-col">
+        <div class="sec-label">Cultural Context</div>
+        ${word.context.map(p => `<p>${p}</p>`).join('\n')}
+        <div class="pull-quote">"${word.pullQuote}"</div>
+      </div>
+    </div>
+
+    <!-- 3. PHOTO STRIP -->
+    <div class="strip">
+      <div class="strip-anchor"><span>${word.zh}</span></div>
+      <div class="strip-photos">
+        <div class="strip-track">
+          ${stripSet}
+          ${stripSet}
+        </div>
+      </div>
+      <div class="strip-fade"></div>
+    </div>
+
+    <!-- 4. REAL-LIFE EXAMPLES -->
+    <div class="examples">
+      <div class="sec-label">Real-Life Examples</div>
+      ${examplesHTML}
+    </div>
+
+    <!-- 5. PILE MOTION -->
+    <div class="typo-motion">
+      <div class="pile-label">Visual Interpretation</div>
+      <div class="pile-canvas" id="pileCanvas"></div>
+    </div>
+
+    <!-- 6. RELATED WORDS -->
+    <div class="related">
+      <div class="sec-label">Related Words</div>
+      <div class="related-cards">${relatedHTML}</div>
+    </div>
+  `;
+
+  /* ── PHOTO SLIDESHOW ── */
+  const slides   = document.querySelectorAll('.slide');
+  const dotsWrap = document.getElementById('dots');
+  let current = 0;
+
+  slides.forEach((s, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsWrap.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsWrap.children[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dotsWrap.children[current].classList.add('active');
+  }
+  setInterval(() => goTo((current + 1) % slides.length), 4000);
+
+  /* ── PILE ANIMATION ── */
+  const illustrations = word.imgs || IMGS;
+  const ALL = [...illustrations, ...word.pileWords];
+  const pileCanvas = document.getElementById('pileCanvas');
+
+  function spawnItem(def) {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:absolute; pointer-events:none;';
+
+    if (def.src) {
+      const img = document.createElement('img');
+      img.src = def.src;
+      const f = def.invert ? 'invert(1)' : def.redBlack ? 'invert(1) hue-rotate(180deg)' : 'none';
+      img.style.cssText = `width:${def.w}px; filter:${f}; display:block;`;
+      if (def.redBlack || def.screen) img.style.mixBlendMode = 'screen';
+      el.appendChild(img);
+    } else {
+      el.style.fontWeight  = '700';
+      el.style.lineHeight  = '1';
+      el.style.fontSize    = def.fs + 'px';
+      el.style.color       = def.color;
+      if (def.ls)     el.style.letterSpacing = def.ls;
+      if (def.italic) el.style.fontStyle     = 'italic';
+      el.textContent = def.text;
+    }
+
+    const startX = 5 + Math.random() * 80;
+    const startR = (Math.random() - 0.5) * 60;
+    const landR  = (Math.random() - 0.5) * 35;
+    const landY  = 30 + Math.random() * 40;
+
+    el.style.left       = startX + '%';
+    el.style.top        = '-220px';
+    el.style.opacity    = '0';
+    el.style.transform  = `rotate(${startR}deg)`;
+    el.style.transition = 'none';
+    pileCanvas.appendChild(el);
+    el.getBoundingClientRect();
+
+    el.style.transition = `top 0.75s cubic-bezier(0.34,1.25,0.64,1),
+                            transform 0.75s cubic-bezier(0.34,1.25,0.64,1),
+                            opacity 0.25s ease`;
+    el.style.top       = landY + '%';
+    el.style.opacity   = '1';
+    el.style.transform = `rotate(${landR}deg)`;
+
+    const slideDelay = 900 + Math.random() * 700;
+    setTimeout(() => {
+      el.style.transition = `top 2.2s ease-in, left 2.2s ease-in,
+                              opacity 0.9s ease-in 1.3s, transform 2.2s ease-in`;
+      el.style.top       = '105%';
+      el.style.left      = (-5 - Math.random() * 15) + '%';
+      el.style.opacity   = '0';
+      el.style.transform = `rotate(${landR + (Math.random() - 0.5) * 25}deg)`;
+    }, slideDelay);
+
+    setTimeout(() => {
+      el.remove();
+      setTimeout(() => spawnItem(def), 400 + Math.random() * 800);
+    }, slideDelay + 2400);
+  }
+
+  const pileSection = document.querySelector('.typo-motion');
+  let pileStarted = false;
+  new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !pileStarted) {
+        pileStarted = true;
+        ALL.forEach((def, i) => setTimeout(() => spawnItem(def), i * 180));
+      }
+    });
+  }, { threshold: 0.1 }).observe(pileSection);
+}
+</script>
+</body>
+</html>
