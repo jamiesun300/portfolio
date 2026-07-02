@@ -15,7 +15,7 @@ export default function UntranslatableTaiwanPage() {
           className="flex items-center gap-3 text-[10px] tracking-[0.35em] uppercase text-muted mb-5"
         >
           <span className="w-6 h-px bg-accent" />
-          UI/UX · 2025
+          UI/UX · 2026
         </motion.p>
 
         <div className="overflow-hidden mb-3">

@@ -47,7 +47,7 @@ export const projects: Project[] = [
     title: 'Lost in Translation',
     tagline: 'Taiwanese words that English cannot hold.',
     category: 'UI/UX',
-    year: '2025',
+    year: '2026',
     client: 'Personal Project',
     role: 'Designer, Developer, Illustrator',
     tools: ['HTML/CSS/JS', 'Illustrator', 'Procreate'],
