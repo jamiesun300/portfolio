@@ -43,6 +43,35 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: 'anyday-flower-shop',
+    title: 'Anyday Flower Shop',
+    tagline: 'Flowers for any day, not just the big days.',
+    category: 'Branding',
+    year: '2024',
+    client: 'Concept Project',
+    role: 'Brand Designer',
+    tools: ['Illustrator', 'Photoshop'],
+    projectType: 'Brand Identity',
+    concept:
+      'Anyday is a concept flower shop built around one simple idea: flowers don\'t need an occasion. The brand pushes back against the idea that flowers are reserved for birthdays, anniversaries, or apologies — and instead celebrates the everyday impulse to give and receive joy.',
+    challenge:
+      'Most flower brands lean into soft, romantic aesthetics. The challenge was to create something bold and accessible that feels like a celebration of the ordinary — without losing warmth.',
+    process:
+      'The brand identity is built on a high-contrast palette of Poppy Red, Soft Pink, Butter Yellow, and Sky Blue. Bold condensed type (Gigalypse) paired with clean caps (Skia) creates a graphic energy that feels festive without being precious. Collateral — tags, wrapping paper, sticker sheets, tote bags — all carry the brand\'s core message: no occasion required.',
+    outcome:
+      'A full brand system including logo, color palette, typography, packaging, collateral, and social media templates — all unified by the idea that any day is a good day for flowers.',
+    coverImage: '/images/anyday-01.jpg',
+    images: [
+      '/images/anyday-01.jpg',
+      '/images/anyday-02.jpg',
+      '/images/anyday-03.jpg',
+      '/images/anyday-04.jpg',
+      '/images/anyday-05.jpg',
+      '/images/anyday-06.jpg',
+    ],
+    featured: false,
+  },
+  {
     slug: 'untranslatable-taiwan',
     title: 'Lost in Translation',
     tagline: 'Taiwanese words that English cannot hold.',
